@@ -33,6 +33,7 @@ public class TimePickerView extends BasePickerView implements View.OnClickListen
     private Button btnSubmit, btnCancel; //确定、取消按钮
     private TextView tvTitle;//标题
     private OnTimeSelectListener timeSelectListener;//回调接口
+    private OnClickListener positiveClickListener, negativeClickListener;
     private int gravity = Gravity.CENTER;//内容显示位置 默认居中
     private boolean[] type;// 显示类型
 
@@ -81,6 +82,8 @@ public class TimePickerView extends BasePickerView implements View.OnClickListen
     public TimePickerView(Builder builder) {
         super(builder.context);
         this.timeSelectListener = builder.timeSelectListener;
+        this.positiveClickListener = builder.positiveClickListener;
+        this.negativeClickListener = builder.negativeClickListener;
         this.gravity = builder.gravity;
         this.type = builder.type;
         this.Str_Submit = builder.Str_Submit;
@@ -127,7 +130,9 @@ public class TimePickerView extends BasePickerView implements View.OnClickListen
         this.decorView = builder.decorView;
         initView(builder.context);
     }
-
+    public interface OnClickListener{
+        void click();
+    }
 
     //建造器
     public static class Builder {
@@ -135,6 +140,7 @@ public class TimePickerView extends BasePickerView implements View.OnClickListen
         private CustomListener customListener;
         private Context context;
         private OnTimeSelectListener timeSelectListener;
+        private OnClickListener positiveClickListener, negativeClickListener;
         private boolean[] type = new boolean[]{true, true, true, true, true, true};//显示类型 默认全部显示
         private int gravity = Gravity.CENTER;//内容显示位置 默认居中
 
@@ -179,9 +185,11 @@ public class TimePickerView extends BasePickerView implements View.OnClickListen
         private int xoffset_year, xoffset_month, xoffset_day, xoffset_hours, xoffset_mins, xoffset_seconds;//单位
 
         //Required
-        public Builder(Context context, OnTimeSelectListener listener) {
+        public Builder(Context context, OnTimeSelectListener listener, OnClickListener positive, OnClickListener negative) {
             this.context = context;
             this.timeSelectListener = listener;
+            this.positiveClickListener = positive;
+            this.negativeClickListener = negative;
         }
 
         //Option
@@ -571,6 +579,11 @@ public class TimePickerView extends BasePickerView implements View.OnClickListen
         String tag = (String) v.getTag();
         if (tag.equals(TAG_SUBMIT)) {
             returnData();
+            if (positiveClickListener != null){
+                positiveClickListener.click();
+            }
+        }else if (negativeClickListener != null){
+            negativeClickListener.click();
         }
         dismiss();
     }
